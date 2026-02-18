@@ -8,6 +8,10 @@ def getusername():
 
 welcomeUser()
 username = getusername()
+username2 = getusername()
+
 print(f"Welcome, {username}!")
+print(f"Welcome, {username2}!")
+
 
 
