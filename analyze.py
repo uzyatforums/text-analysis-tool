@@ -6,12 +6,15 @@ def getusername():
     username = input("Enter your username: ")
     return username
 
+def greetUser(username):
+    print(f"Welcome, {username}!")
+
 welcomeUser()
 username = getusername()
-username2 = getusername()
+greetUser(username)
 
-print(f"Welcome, {username}!")
-print(f"Welcome, {username2}!")
+
+
 
 
 
