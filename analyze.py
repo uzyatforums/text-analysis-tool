@@ -5,30 +5,30 @@ def welcomeUser():
     print("Welcome to the text analysis tool. I will mine and analyse a body of text from a file you give me")
 
 
-def getusername():
-    usernameFromInput = input("\nTo begin, please enter your username:\n")
+# Get Username
+def getUsername():
+    
+    maxAttempts = 3
+    attempts = 0
 
-    usernameLessThan5Chars = len(usernameFromInput) < 5
+    while attempts < maxAttempts:
+        # Print message prompting user to input their name
+        usernameFromInput = input("\nTo begin, please enter your username:\n")
 
-    print("Less than 5 characters: " + str(usernameLessThan5Chars))
+        if len(usernameFromInput) < 5 or not usernameFromInput.isidentifier():
+            print("Your username must be at least 5 characters long, alphanumeric only (a-z/A-Z/0-9), have no spaces and start with a letter.")
+        else:
+            return usernameFromInput
 
+        attempts += 1
 
-    if len(usernameFromInput) < 5 or not usernameFromInput.isidentifier():
-        print("Your username must be at least 5 characters long, alphanumeric only (a-z/A-Z/0-9), have no spaces, and cannot start with a number")
-        print("Assigning username instead...")
-        usernameFromInput = generate_username()[0]
+    print("\nExhausted all " + str(maxAttempts) + " attempts, assigning username instead...")
+    return generate_username()[0]
 
-    return usernameFromInput
-
-def greetUser(username):
-    print(f"Welcome, {username}!")
+# Greet the user
+def greetUser(name):
+    print("Hello, " + name)
 
 welcomeUser()
-username = getusername()
+username = getUsername()
 greetUser(username)
-
-
-
-
-
-
