@@ -1,10 +1,16 @@
 from random_username.generate import generate_username
 
 import nltk
-from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
-# nltk.download('wordnet')
+from nltk.corpus import wordnet, stopwords
+
+nltk.download("stopwords")
+nltk.download("wordnet")
+nltk.download("averaged_perceptron_tagger")
+
+wordLemmatizer = WordNetLemmatizer()
+stopWords = set(stopwords.words("english"))
 import re
 
 wordLemmatizer = WordNetLemmatizer()
@@ -80,7 +86,8 @@ posToWordnetTag = {
     "R": wordnet.ADV
 }
 
-def treebank_pos_to_wordnet_pos(partOfSpeech):
+# def treebank_pos_to_wordnet_pos(partOfSpeech):
+def treebankPosToWordnetPos(partOfSpeech):
     posFirstChar = partOfSpeech[0]
     if posFirstChar in posToWordnetTag:
         return posToWordnetTag[posFirstChar]
@@ -89,15 +96,21 @@ def treebank_pos_to_wordnet_pos(partOfSpeech):
 # Convert raw list of (word, POS) tuple to a list of strings
 # that only include valid english words
 def cleanseWordList(posTaggedWordTuples):
-    cleansewords = []
+    cleanseWords = []
     invalidWordPattern = r"[^a-zA-Z\-]"
     for posTaggedWordTuple in posTaggedWordTuples:
         word = posTaggedWordTuple[0]
         pos = posTaggedWordTuple[1]
-        cleanseword = word.replace(".", "").lower()
-        if (not re.search(invalidWordPattern, cleanseword)) and len(cleanseword) > 1:
-            cleansewords.append(wordLemmatizer.lemmatize(cleanseword, treebank_pos_to_wordnet_pos(pos)))
-    return cleansewords
+        cleanseWord = word.replace(".", "").lower()
+        if (not re.search(invalidWordPattern, cleanseWord)) and len(cleanseWord) > 1 and cleanseWord not in stopWords:
+            cleanseWords.append(
+                wordLemmatizer.lemmatize(
+                    cleanseWord,
+                    # treebankPosToWordnetPos(pos)
+                    treebankPosToWordnetPos(pos)
+                )
+            )
+    return cleanseWords
 
 # Get User Details
 # welcomeUser()
