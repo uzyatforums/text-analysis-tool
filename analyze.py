@@ -1,7 +1,13 @@
 from random_username.generate import generate_username
-from nltk.tokenize import sent_tokenize, word_tokenize
+
 import nltk
+from nltk.corpus import wordnet
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.stem import WordNetLemmatizer
+# nltk.download('wordnet')
 import re
+
+wordLemmatizer = WordNetLemmatizer()
 
 def welcomeUser():
     # Print message prompting user  to input their name
@@ -66,15 +72,16 @@ def getWordsPerSentence(sentences):
     return totalWords / len(sentences)
 
 # Filter raw tokenized words list to only include
-# valid English words.
+# valid english words
 def cleanseWordList(words):
-    cleanedWords = []
-    invalidWordPattern = "^[a-zA-Z-a]"
+    cleansedWords = []
+    invalidWordPattern = "[^a-zA-Z-]"
     for word in words:
-        cleanedWord = word.replace(",", "").lower()
-        if (not re.search(invalidWordPattern, cleanedWord)) and len(word) > 1:
-            cleanedWords.append(cleanedWord)
-    return cleanedWords
+        cleansedWord = word.replace(".", "").lower()
+        if (not re.search(invalidWordPattern, cleansedWord)) and len(cleansedWord) > 1:
+            cleansedWords.append(wordLemmatizer.lemmatize(cleansedWord))
+    return cleansedWords
+
 
 # Get User Details
 # welcomeUser()
