@@ -17,6 +17,7 @@ sentimentAnalyzer = SentimentIntensityAnalyzer()
 
 from wordcloud import WordCloud
 import re
+import json
 
 def welcomeUser():
     # Print message prompting user  to input their name
@@ -120,9 +121,9 @@ def cleanseWordList(posTaggedWordTuples):
     return cleansedWords
 
 # Get User Details
-# welcomeUser()
-# username = getUsername()
-# greetUser(username)
+welcomeUser()
+username = getUsername()
+greetUser(username)
 
 # Extract and Tokenize Text
 articleTextRaw = getArticleText()
@@ -139,15 +140,35 @@ wordsPosTagged = nltk.pos_tag(articleWords)
 articleWordsCleansed = cleanseWordList(wordsPosTagged)
 
 # Generate word cloud
+wordCloudFilePath = "results/wordcloud.png"
 separator = " "
 wordcloud = WordCloud(width=1400, height=700,
                        background_color="white",
                        colormap="Set3",
                        collocations=False).generate(separator.join(articleWordsCleansed))
-wordcloud.to_file("results/wordcloud.png")
+wordcloud.to_file(wordCloudFilePath)
 
 # Run sentiment analysis
 sentimentResult = sentimentAnalyzer.polarity_scores(articleTextRaw)
+
+# Collate analysis into one dictionary
+finalResult = {
+    "username": username,
+    "data": {
+        "keySentences": keySentences,
+        "wordsPerSentence": round(wordsPerSentence, 1),
+        "sentiment": sentimentResult,
+        "wordCloudFilePath": wordCloudFilePath
+        
+    },
+    "metadata": {
+        "sentencesAnalyzed": "files/article.txt",
+        "wordsAnalyzed": len(articleSentences)
+    }
+}
+finalResultList = json.dumps(finalResult, indent=4)
+
+
 # Finish the testing
 
-print(sentimentResult)
+print(finalResultList)
