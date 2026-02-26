@@ -4,13 +4,16 @@ import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 nltk.download("stopwords")
 nltk.download("wordnet")
 nltk.download("averaged_perceptron_tagger")
+nltk.download("vader_lexicon")
 
 wordLemmatizer = WordNetLemmatizer()
 stopWords = set(stopwords.words("english"))
+sentimentAnalyzer = SentimentIntensityAnalyzer()
 
 from wordcloud import WordCloud
 import re
@@ -143,5 +146,8 @@ wordcloud = WordCloud(width=1400, height=700,
                        collocations=False).generate(separator.join(articleWordsCleansed))
 wordcloud.to_file("results/wordcloud.png")
 
+# Run sentiment analysis
+sentimentResult = sentimentAnalyzer.polarity_scores(articleTextRaw)
 # Finish the testing
-print("Done!")
+
+print(sentimentResult)
