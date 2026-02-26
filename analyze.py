@@ -11,9 +11,9 @@ nltk.download("averaged_perceptron_tagger")
 
 wordLemmatizer = WordNetLemmatizer()
 stopWords = set(stopwords.words("english"))
-import re
 
-wordLemmatizer = WordNetLemmatizer()
+from wordcloud import WordCloud
+import re
 
 def welcomeUser():
     # Print message prompting user  to input their name
@@ -77,6 +77,7 @@ def getWordsPerSentence(sentences):
         totalWords += len(sentence.split(" "))
     return totalWords / len(sentences)
 
+
 # Convert part of speech from pos_tag() function
 # into wordnet compatible pos tag
 posToWordnetTag = {
@@ -86,31 +87,34 @@ posToWordnetTag = {
     "R": wordnet.ADV
 }
 
-# def treebank_pos_to_wordnet_pos(partOfSpeech):
 def treebankPosToWordnetPos(partOfSpeech):
     posFirstChar = partOfSpeech[0]
     if posFirstChar in posToWordnetTag:
         return posToWordnetTag[posFirstChar]
     return wordnet.NOUN
 
-# Convert raw list of (word, POS) tuple to a list of strings
-# that only include valid english words
+# Convert raw list of (word, POS) tuples to a list of strings
+# that only include valid English words
 def cleanseWordList(posTaggedWordTuples):
-    cleanseWords = []
-    invalidWordPattern = r"[^a-zA-Z\-]"
+    cleansedWords = []
+    # invalidWordPattern = "[^a-zA-Z\-]"
+    invalidWordPattern = r"[^a-zA-Z-]"
+    
     for posTaggedWordTuple in posTaggedWordTuples:
         word = posTaggedWordTuple[0]
-        pos = posTaggedWordTuple[1]
-        cleanseWord = word.replace(".", "").lower()
-        if (not re.search(invalidWordPattern, cleanseWord)) and len(cleanseWord) > 1 and cleanseWord not in stopWords:
-            cleanseWords.append(
+        pos  = posTaggedWordTuple[1]
+        cleansedWord = word.replace(".", "").lower()
+        
+        if (not re.search(invalidWordPattern, cleansedWord) 
+            and len(cleansedWord) > 1 
+            and cleansedWord not in stopWords):
+            cleansedWords.append(
                 wordLemmatizer.lemmatize(
-                    cleanseWord,
-                    # treebankPosToWordnetPos(pos)
+                    cleansedWord, 
                     treebankPosToWordnetPos(pos)
                 )
             )
-    return cleanseWords
+    return cleansedWords
 
 # Get User Details
 # welcomeUser()
@@ -123,14 +127,21 @@ articleSentences = tokenizeSentences(articleTextRaw)
 articleWords = tokenizeWords(articleSentences)
 
 # Get Sentence Analytics
-stockSearchPattern = r"(^a-z)|(\s[A-Z]|thousand|million|billion|trillion|profit|loss)"
+stockSearchPattern = r"(^[0-9])|(\s[A-Z])|(thousand|million|billion|trillion|profit|loss)"
 keySentences = extractKeySentences(articleSentences, stockSearchPattern)
 wordsPerSentence = getWordsPerSentence(articleSentences)
 
-# Get Word Analytics
-wordPoSTagged = nltk.pos_tag(articleWords)
-articleWordsCleansed = cleanseWordList(wordPoSTagged)
+# Get Word analytics
+wordsPosTagged = nltk.pos_tag(articleWords)
+articleWordsCleansed = cleanseWordList(wordsPosTagged)
 
-# Print for testing
-print("=GO!=")
-print(articleWordsCleansed)
+# Generate word cloud
+separator = " "
+wordcloud = WordCloud(width=1400, height=700,
+                       background_color="white",
+                       colormap="Set3",
+                       collocations=False).generate(separator.join(articleWordsCleansed))
+wordcloud.to_file("results/wordcloud.png")
+
+# Finish the testing
+print("Done!")
