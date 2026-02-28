@@ -1,9 +1,11 @@
 from datetime import datetime
+from matplotlib.pyplot import title
 import yfinance as yf
 import requests
 import pprint
 import json
 from bs4 import BeautifulSoup
+
 
 def extractBasicInfo(data):
     keyToExtract = [
@@ -41,29 +43,64 @@ def getEarningsDates(company):
     ]
     return futureDates
 
+def extractNewwArticlesTextFromHtml(soup):
+    allText = ""
+    result = soup.find("div", {"data-testid": "article-body"}) or soup.find(
+        "div", class_="caas-body"
+    )
+    print(result)
+    # exit("sssssss")
+    for res in result:
+        allText += res.text
+    return allText
 
-# def getCompanyNews(company):
-#     newsList = company.news
-#     allNewsArticles = []
-#     for newsDict in newsList:
-#         newsDictToAdd = {'title': newsDict.get('title'), 'link': newsDict.get('link')}
-#         allNewsArticles.append(newsDictToAdd)
-#     return allNewsArticles
+headers = {"User-Agent": "Mozilla/5.0"}
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
+def extract_yahoo_article(url):
 
+    # Only process Yahoo-hosted articles
+    # Yahoo does block requests for external articles, so we skip those to avoid unnecessary errors
+    if "yahoo.com" not in url:
+        return ""
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Skipping URL due to request error: {url}")
+        print("Reason:", e)
+        return ""
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # ---- Extract title from meta ----
+    meta_title = soup.find("meta", attrs={"name": "title"})
+    title = meta_title.get("content") if meta_title else "No Title Found"
+
+    # ---- Extract article body ----
+    body_div = (
+        soup.find("div", {"data-testid": "article-body"})
+        or soup.find("div", class_="caas-body")
+    )
+
+    if not body_div:
+        print(f"Article body not found for: {url}")
+        return f"{title}\n\n"
+
+    paragraphs = body_div.find_all("p")
+    article_text = "\n".join(p.get_text(strip=True) for p in paragraphs)
+
+    # Return formatted text
+    return f"{title}\n\n{article_text}\n\n{'-'*80}\n\n"
 
 def extractCompanyNewsArticles(newsArticles):
+    allArticlesText = ""
     for newsArticle in newsArticles:
         url = newsArticle["url"]
-        page = requests.get(url, headers=headers)
-        soup = BeautifulSoup(page.text, "html.parser")
-        if(soup.find_all(string="Story continues")):
-            print("Tag found - should skip")
-        else:
-            print("Tag not found, don't skip")
+        allArticlesText += extract_yahoo_article(url)
+            
+    return allArticlesText
+
 
 def getCompanyNews(company):
     news_items = company.news
@@ -81,7 +118,6 @@ def getCompanyNews(company):
 
         title = content.get("title")
         pub_date = content.get("pubDate")
-
         canonical = content.get("canonicalUrl", {})
         url = canonical.get("url")
 
@@ -101,9 +137,13 @@ def getCompanyStockInfo(tickerSymbol):
     priceHistory = getPriceHistory(company)
     futureEarningsDates = getEarningsDates(company)
 
-    # Get news about company
+    # Get company news
     newsArticles = getCompanyNews(company)
-    extractCompanyNewsArticles(newsArticles)
+    # print(json.dumps(newsArticles, indent=2))
+    newsArticlesAllText = extractCompanyNewsArticles(newsArticles)
+
+    return newsArticlesAllText
 
 
-getCompanyStockInfo("AAPL")
+newsArticlesAllText = getCompanyStockInfo("MSFT")
+print(newsArticlesAllText)
