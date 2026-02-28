@@ -5,6 +5,7 @@ import requests
 import pprint
 import json
 from bs4 import BeautifulSoup
+import analyze
 
 
 def extractBasicInfo(data):
@@ -141,9 +142,9 @@ def getCompanyStockInfo(tickerSymbol):
     newsArticles = getCompanyNews(company)
     # print(json.dumps(newsArticles, indent=2))
     newsArticlesAllText = extractCompanyNewsArticles(newsArticles)
+    newsTextAnalysuis = analyze.analyzeText(newsArticlesAllText)
+    finalResultList = json.dumps(newsTextAnalysuis, indent=4)
+    print(finalResultList)
 
-    return newsArticlesAllText
 
-
-newsArticlesAllText = getCompanyStockInfo("MSFT")
-print(newsArticlesAllText)
+getCompanyStockInfo("MSFT")
