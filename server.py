@@ -13,6 +13,10 @@ app = Flask(__name__)
 def hello_world():
     return 'Flask server is up and running'
 
+@app.route('/analyze-stock')
+def analyzeStock():
+    return {"data" : "Analysis coming soon!"}
+
 # main driver function
 if __name__ == '__main__':
     # run() method of Flask class runs the application
