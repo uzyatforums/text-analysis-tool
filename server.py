@@ -2,7 +2,11 @@
 # An object of Flask class is our WSGI application.
 from flask import Flask, abort
 from stockAnalyze import getCompanyStockInfo
+from analyze import analyzeText
 import json
+import requests
+from flask import request, jsonify
+
 
 # Flask constructor takes the name of
 # current module (__name__) as argument.
@@ -15,7 +19,7 @@ app = Flask(__name__)
 def hello_world():
     return 'Flask server is up and running'
 
-@app.route('/analyze-stock/<ticker>')
+@app.route('/analyze-stock/<ticker>', methods=['GET'])
 def analyzeStock(ticker):
     if len(ticker) > 5 or not ticker.isidentifier():
         abort(400, 'Invalid ticker symbol')
@@ -26,6 +30,15 @@ def analyzeStock(ticker):
     except:
         abort(500, 'Somethng went wrong, running the stock analysis')  
     return analysis
+
+@app.route('/analyze-text', methods=['POST'])
+def analyzeTextHandler():
+    data = request.get_json()
+    if 'text' not in data or not data['text']:
+        abort(400, 'No text provided to analyze')
+    analysis = analyzeText(data['text'])
+    return analysis
+
 
 # main driver function
 if __name__ == '__main__':
