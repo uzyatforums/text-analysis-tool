@@ -1,6 +1,7 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
 from flask import Flask, abort
+from flask_cors import CORS
 from stockAnalyze import getCompanyStockInfo
 from analyze import analyzeText
 import json
@@ -11,6 +12,7 @@ from flask import request, jsonify
 # Flask constructor takes the name of
 # current module (__name__) as argument.
 app = Flask(__name__)
+CORS(app)
 
 # The route() function of the Flask class is a decorator,
 # which tells the application which URL should call

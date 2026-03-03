@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 import analyze
 
 
+
 def extractBasicInfo(data):
     keyToExtract = [
         "longName",
