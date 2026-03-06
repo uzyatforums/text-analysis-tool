@@ -5,6 +5,9 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import io
+import base64
+from wordcloud import WordCloud
 
 nltk.download("stopwords")
 nltk.download("wordnet")
@@ -144,6 +147,16 @@ def analyzeText(textToAnalyze):
                         collocations=False).generate(separator.join(articleWordsCleansed))
     wordcloud.to_file(wordCloudFilePath)
 
+    # 2. Save to an in-memory buffer instead of a file
+    imgBuffer = io.BytesIO()
+    # We use .to_image() to get a PIL object, then save to buffer
+    wordcloud.to_image().save(imgBuffer, format='PNG')
+
+    # 3. Encode the buffer to Base64
+    imgBuffer.seek(0) # Go to the start of the virtual file
+    encodedWordCloud = base64.b64encode(imgBuffer.getvalue()).decode('utf-8')
+
+
     # Run sentiment analysis
     sentimentResult = sentimentAnalyzer.polarity_scores(textToAnalyze)
 
@@ -153,8 +166,8 @@ def analyzeText(textToAnalyze):
             "keySentences": keySentences,
             "wordsPerSentence": round(wordsPerSentence, 1),
             "sentiment": sentimentResult,
-            "wordCloudFilePath": wordCloudFilePath
-            
+            "wordCloudFilePath": wordCloudFilePath,
+            "wordCloudImage": encodedWordCloud
         },
         "metadata": {
             "sentencesAnalyzed": "files/article.txt",
