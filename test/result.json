@@ -63,7 +63,7 @@
             "url": "https://www.investors.com/market-trend/stock-market-today/dow-jones-sp500-nasdaq-us-iran-attacks-nvidia-tesla/?src=A00220&yptr=yahoo"
         }
     ],
-    "newsTextAnalysuis": {
+    "newsTextAnalysis": {
         "data": {
             "keySentences": [
                 "Earnings and Margins Hit New Highs\nLast week, both earnings and profit margins reached fresh all-time highs.",
