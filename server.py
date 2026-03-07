@@ -25,7 +25,7 @@ def hello_world():
 
 @app.route('/analyze-stock/<ticker>', methods=['GET'])
 def analyzeStock(ticker):
-    # return stockDataTest
+    return stockDataTest # local json file for testing, replace with live API call when ready
     if len(ticker) > 5 or not ticker.isidentifier():
         abort(400, 'Invalid ticker symbol')
     try:
