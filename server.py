@@ -25,16 +25,16 @@ def hello_world():
 
 @app.route('/analyze-stock/<ticker>', methods=['GET'])
 def analyzeStock(ticker):
-    return stockDataTest
-    # if len(ticker) > 5 or not ticker.isidentifier():
-    #     abort(400, 'Invalid ticker symbol')
-    # try:
-    #     analysis = getCompanyStockInfo(ticker)
-    # except NameError as e:
-    #     abort(404, e)  
-    # except:
-    #     abort(500, 'Somethng went wrong, running the stock analysis')  
-    # return analysis
+    # return stockDataTest
+    if len(ticker) > 5 or not ticker.isidentifier():
+        abort(400, 'Invalid ticker symbol')
+    try:
+        analysis = getCompanyStockInfo(ticker)
+    except NameError as e:
+        abort(404, e)  
+    except:
+        abort(500, 'Somethng went wrong, running the stock analysis')  
+    return analysis
 
 @app.route('/analyze-text', methods=['POST'])
 def analyzeTextHandler():
@@ -49,4 +49,4 @@ def analyzeTextHandler():
 if __name__ == '__main__':
     # run() method of Flask class runs the application
     # on the local development server.
-    app.run()
+    app.run(host="0.0.0.0")
