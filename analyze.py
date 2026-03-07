@@ -155,13 +155,14 @@ def analyzeText(textToAnalyze):
 
     # 3. Encode the buffer to Base64
     imgBuffer.seek(0) # Go to the start of the virtual file
-    encodedWordCloud = base64.b64encode(imgBuffer.getvalue()).decode('utf-8')
+    # encodedWordCloud = base64.b64encode(imgBuffer.getvalue()).decode('utf-8')
+    encodedWordCloud = "DELETE ME LATER"
 
 
     # Run sentiment analysis
     sentimentResult = sentimentAnalyzer.polarity_scores(textToAnalyze)
 
-    # Collate analysis into one dictionary
+    # Collate analysis into one dictionary  
     finalResult = {
         "data": {
             "keySentences": keySentences,
