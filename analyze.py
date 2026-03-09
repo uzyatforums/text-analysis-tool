@@ -48,6 +48,11 @@ def getUsername():
     print("\nExhausted all " + str(maxAttempts) + " attempts, assigning username instead...")
     return generate_username()[0]
 
+def get_json_stock_data(mock_json_path):
+    with open(mock_json_path, 'r') as f:
+        stockDataTest = json.load(f)
+    return stockDataTest
+        
 def greetUser(name):
     print("Hello, " + name)
 
@@ -155,8 +160,7 @@ def analyzeText(textToAnalyze):
 
     # 3. Encode the buffer to Base64
     imgBuffer.seek(0) # Go to the start of the virtual file
-    # encodedWordCloud = base64.b64encode(imgBuffer.getvalue()).decode('utf-8')
-    encodedWordCloud = "DELETE ME LATER"
+    encodedWordCloud = base64.b64encode(imgBuffer.getvalue()).decode('utf-8')
 
 
     # Run sentiment analysis

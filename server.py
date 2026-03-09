@@ -1,15 +1,15 @@
 # Importing flask module in the project is mandatory
 # An object of Flask class is our WSGI application.
+import os
+
 from flask import Flask, abort
 from flask_cors import CORS
 from stockAnalyze import getCompanyStockInfo
-from analyze import analyzeText
+from analyze import analyzeText, get_json_stock_data
 import json
 import requests
 from flask import request, jsonify
 
-f = open('test/result.json')
-stockDataTest = json.load(f)
 
 # Flask constructor takes the name of
 # current module (__name__) as argument.
@@ -25,7 +25,15 @@ def hello_world():
 
 @app.route('/analyze-stock/<ticker>', methods=['GET'])
 def analyzeStock(ticker):
-    return stockDataTest # local json file for testing, replace with live API call when ready
+    use_mock_json = True
+    mock_json_path = './test/result.json'
+    stockDataTest = ""
+
+    # Check if mock mode is on AND the file physically exists on the disk
+    if use_mock_json and os.path.exists(mock_json_path):
+        stockDataTest = get_json_stock_data(mock_json_path)
+        return stockDataTest # local json file for testing, replace with live API call when ready
+
     if len(ticker) > 5 or not ticker.isidentifier():
         abort(400, 'Invalid ticker symbol')
     try:
